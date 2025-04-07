@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Etiquetas</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #e0f7f4;
+      color: #034d4d;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 420px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 128, 128, 0.2);
+      border: 1px solid #b2dfdb;
+    }
+    h2 {
+      text-align: center;
+      color: #00695c;
+      font-family: 'Arial', sans-serif;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #a7dcd9;
+      border-radius: 6px;
+      background-color: #f0fbfa;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #26a69a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #00796b;
+    }
+    #etiquetas {
+      display: block;
+    }
+    .etiqueta {
+      width: 90vw;
+      height: 90vh;
+      margin: 1vh auto 0 auto;
+      border: 2px solid #009688;
+      border-radius: 8px;
+      position: relative;
+      padding: 10mm;
+      box-sizing: border-box;
+      page-break-after: always;
+      background-color: white;
+      font-family: 'Arial', sans-serif;
+    }
+    .etiqueta .area {
+      position: absolute;
+      top: 10mm;
+      left: 10mm;
+      font-size: 24pt;
+      font-weight: bold;
+    }
+    .conteudo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .conteudo p {
+      margin: 5mm 0;
+      font-size: 28pt;
+    }
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .container, button {
+        display: none;
+      }
+      .etiqueta {
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculadora de Etiquetas</h2><label for="ha">Ha:</label>
+<input type="number" id="ha" placeholder="Digite o valor de Ha" step="0.001">
+
+<label for="galoes">Quantidade de galões:</label>
+<input type="number" id="galoes" placeholder="Digite a quantidade de galões" step="1">
+
+<label for="dose">Dose de Muneo (L/Ha):</label>
+<input type="number" id="dose" placeholder="0.83 (padrão)" step="0.001">
+
+<button onclick="gerarEtiquetas()">Gerar Etiquetas</button>
+
+  </div>  <div id="etiquetas"></div>  <script>
+    function formatarNumero(valor, casas) {
+      return valor.toFixed(casas).replace('.', ',');
+    }
+
+    function gerarEtiquetas() {
+      const ha = parseFloat(document.getElementById('ha').value);
+      const galoes = parseInt(document.getElementById('galoes').value);
+      const dose = parseFloat(document.getElementById('dose').value) || 0.83;
+
+      if (!ha || !galoes || ha <= 0 || galoes <= 0) {
+        alert('Por favor, insira valores válidos para Ha e galões.');
+        return;
+      }
+
+      const haPorGalao = ha / galoes;
+      const muneoTotal = ha * dose;
+      const aguaTotal = muneoTotal;
+
+      const muneoPorGalao = muneoTotal / galoes;
+      const aguaPorGalao = aguaTotal / galoes;
+      const totalPorGalao = muneoPorGalao + aguaPorGalao;
+
+      let etiquetasHTML = '';
+      for (let i = 0; i < galoes; i++) {
+        etiquetasHTML += `
+          <div class="etiqueta">
+            <div class="area">Área (Ha): ${formatarNumero(haPorGalao, 2)}</div>
+            <div class="conteudo">
+              <p><strong>Muneo:</strong> ${formatarNumero(muneoPorGalao, 3)} L</p>
+              <p><strong>Água:</strong> ${formatarNumero(aguaPorGalao, 3)} L</p>
+              <p><strong>Total:</strong> ${formatarNumero(totalPorGalao, 3)} L</p>
+            </div>
+          </div>
+        `;
+      }
+
+      const etiquetasContainer = document.getElementById('etiquetas');
+      etiquetasContainer.innerHTML = etiquetasHTML;
+      setTimeout(() => window.print(), 300);
+    }
+  </script></body>
+</html>
